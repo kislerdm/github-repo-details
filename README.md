@@ -66,7 +66,7 @@ The library to fetch repo details to simplify due diligence when assessing it fo
 
         - [Community Profile Metrics](https://docs.github.com/en/rest/reference/repository-metrics#get-community-profile-metrics)
 
-        - [Contributors]():
+        - [Contributors/commits](https://docs.github.com/en/rest/reference/commits):
 
             - Total count
 

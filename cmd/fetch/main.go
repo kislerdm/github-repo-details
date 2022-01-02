@@ -4,7 +4,9 @@ import (
 	"log"
 	"os"
 
+	"github.com/goccy/go-json"
 	gitClient "github.com/kislerdm/github-repo-details"
+	"github.com/kislerdm/github-repo-details/internal/fs"
 )
 
 func main() {
@@ -15,9 +17,17 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	r, err := c.GetGraphQLData("kislerdm", "gbqschema_converter")
+	r, err := c.FetchDetails("kislerdm", "gbqschema_converter")
 	if err != nil {
 		log.Fatalln(err)
 	}
-	log.Println(r.Data.Repository.URL)
+
+	o, err := json.Marshal(r)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	if err := fs.FileWrite(o, "/tmp/fetch_out.json"); err != nil {
+		log.Fatalln(err)
+	}
 }

@@ -1,4 +1,4 @@
-package http
+package client
 
 import (
 	"bytes"
@@ -94,14 +94,22 @@ func (c *Client) extractBody(res *http.Response) (*Response, error) {
 }
 
 func (c *Client) requestWithContext(ctx context.Context, method string, url string, headers map[string]string, body []byte) (resp *Response, err error) {
-	req, err := http.NewRequestWithContext(ctx, method, url, bytes.NewReader(body))
+	bReader := &bytes.Reader{}
+	if body != nil {
+		bReader = bytes.NewReader(body)
+	}
+	req, err := http.NewRequestWithContext(ctx, method, url, bReader)
 	if err != nil {
 		return nil, ErrorHttp{req.Response.StatusCode, err.Error()}
 	}
 	c.setHeaders(req, headers)
 	res, err := c.c.Do(req)
 	if err != nil {
-		return nil, ErrorHttp{res.StatusCode, err.Error()}
+		status := http.StatusInternalServerError
+		if res != nil {
+			status = res.StatusCode
+		}
+		return nil, ErrorHttp{status, err.Error()}
 	}
 	return c.extractBody(res)
 }
